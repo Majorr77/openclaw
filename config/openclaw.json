@@ -1,0 +1,33 @@
+{
+  "agent": {
+    "model": "anthropic/claude-sonnet-4-6",
+    "fallback": "anthropic/claude-haiku-4-5-20251001"
+  },
+
+  "gateway": {
+    "host": "0.0.0.0",
+    "port": 18789
+  },
+
+  "channels": {
+    "telegram": {
+      "token": "${TELEGRAM_BOT_TOKEN}"
+    }
+  },
+
+  "dm": {
+    "policy": "allowlist",
+    "allowlist": "${TELEGRAM_ALLOWED_USERS}"
+  },
+
+  "security": {
+    "requireAuth": true,
+    "sessionTimeout": 3600
+  },
+
+  "telemetry": false,
+
+  "workspace": {
+    "path": "/home/openclaw/.openclaw/workspace"
+  }
+}
