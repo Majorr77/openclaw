@@ -16,10 +16,9 @@ export default function PersonDetail({ personId, onBack }) {
   const activeLoans = s.loansFor(personId)
   const activeDebts = s.debtsFor(personId)
   const allLoans    = s.loans.filter(l => l.personId === personId)
-  const allDebts    = s.debts.filter(d => d.personId === personId)
 
-  const totalTheyOwe = activeDebts.filter(d=>d.direction==='theyOweMe').reduce((a,d)=>a+ +d.amount,0)
-  const totalIOwe    = activeDebts.filter(d=>d.direction==='iOweThem').reduce((a,d)=>a+ +d.amount,0)
+  const totalTheyOwe = activeDebts.filter(d => d.direction === 'theyOweMe').reduce((a, d) => a + +d.amount, 0)
+  const totalIOwe    = activeDebts.filter(d => d.direction === 'iOweThem').reduce((a, d) => a + +d.amount, 0)
 
   return (
     <>
@@ -29,43 +28,38 @@ export default function PersonDetail({ personId, onBack }) {
         <div style={{ width: 60 }} />
       </div>
 
-      <div className="content">
-        {/* Header */}
-        <div className="card">
-          <div className="card-row">
-            <Avatar name={person.name} size={54} />
-            <div className="row-main">
-              <div className="row-title" style={{ fontSize: 20, fontWeight: 700 }}>{person.name}</div>
-              {person.phone && <div className="row-sub">📞 {person.phone}</div>}
-            </div>
+      <div className="content" style={{ paddingTop: 16 }}>
+        {/* Person header */}
+        <div className="person-card">
+          <Avatar name={person.name} size={60} />
+          <div className="person-card-info">
+            <div className="person-card-name">{person.name}</div>
+            {person.phone && <div className="person-card-sub">📞 {person.phone}</div>}
           </div>
         </div>
 
-        {/* Summary */}
+        {/* Balance summary */}
         {(activeLoans.length > 0 || totalTheyOwe > 0 || totalIOwe > 0) && (
-          <div className="card">
+          <div className="stat-grid">
             {activeLoans.length > 0 && (
-              <div className="card-row">
-                <span style={{ fontSize: 20 }}>🔧</span>
-                <div className="row-main">
-                  <div className="row-title">{activeLoans.length} Gegenstand{activeLoans.length !== 1 ? '"e' : ''} verliehen</div>
-                </div>
+              <div className="stat-card stat-card-blue">
+                <div className="stat-icon-bg bg-blue">🔧</div>
+                <div className="stat-val c-blue">{activeLoans.length}</div>
+                <div className="stat-lbl">Gegenstände</div>
               </div>
             )}
             {totalTheyOwe > 0 && (
-              <div className="card-row">
-                <span style={{ fontSize: 20 }}>📥</span>
-                <div className="row-main">
-                  <div className="row-title c-green">Schuldet mir {fmtMoney(totalTheyOwe)}</div>
-                </div>
+              <div className="stat-card stat-card-green">
+                <div className="stat-icon-bg bg-green">📥</div>
+                <div className="stat-val c-green">{fmtMoney(totalTheyOwe)}</div>
+                <div className="stat-lbl">Schuldet mir</div>
               </div>
             )}
             {totalIOwe > 0 && (
-              <div className="card-row">
-                <span style={{ fontSize: 20 }}>📤</span>
-                <div className="row-main">
-                  <div className="row-title c-red">Ich schulde {fmtMoney(totalIOwe)}</div>
-                </div>
+              <div className="stat-card stat-card-red">
+                <div className="stat-icon-bg bg-red">📤</div>
+                <div className="stat-val c-red">{fmtMoney(totalIOwe)}</div>
+                <div className="stat-lbl">Ich schulde</div>
               </div>
             )}
           </div>
@@ -80,8 +74,9 @@ export default function PersonDetail({ personId, onBack }) {
                 const item = s.item(loan.itemId)
                 return (
                   <div key={loan.id} className="card-row">
+                    <div className="row-icon bg-orange" style={{ fontSize: 20 }}>🔧</div>
                     <div className="row-main">
-                      <div className="row-title">{item?.name ?? '—'}</div>
+                      <div className="row-title">{item?.name ?? '–'}</div>
                       <div className="row-sub">Seit {fmtDate(loan.lentOn)}</div>
                       {loan.dueDate && (
                         <div className="row-sub" style={{ color: loan.isOverdue ? 'var(--red)' : undefined }}>
@@ -89,8 +84,12 @@ export default function PersonDetail({ personId, onBack }) {
                         </div>
                       )}
                     </div>
-                    <button className="save-btn" style={{ width: 'auto', padding: '8px 14px', fontSize: 13 }}
-                      onClick={() => s.markReturned(loan.id)}>✓ Zurück</button>
+                    <button onClick={() => s.markReturned(loan.id)}
+                      style={{ background: 'rgba(0,200,83,.2)', color: 'var(--green)', border: 'none',
+                               borderRadius: 12, padding: '8px 14px', fontWeight: 700,
+                               fontSize: 13, cursor: 'pointer', fontFamily: 'inherit' }}>
+                      ✓ Zurück
+                    </button>
                   </div>
                 )
               })}
@@ -105,16 +104,20 @@ export default function PersonDetail({ personId, onBack }) {
             <div className="card">
               {activeDebts.map(debt => (
                 <div key={debt.id} className="card-row">
+                  <div className={`row-icon ${debt.direction === 'theyOweMe' ? 'bg-green' : 'bg-red'}`}>
+                    {debt.direction === 'theyOweMe' ? '📥' : '📤'}
+                  </div>
                   <div className="row-main">
                     <div className="row-title">{debt.description}</div>
                     <div className="row-sub">{fmtDate(debt.createdAt)}</div>
                   </div>
                   <div className="row-right">
-                    <div className="bold" style={{ color: debt.direction==='theyOweMe' ? 'var(--green)' : 'var(--red)' }}>
+                    <div className="bold" style={{ color: debt.direction === 'theyOweMe' ? 'var(--green)' : 'var(--red)' }}>
                       {fmtMoney(debt.amount)}
                     </div>
                     <button onClick={() => s.markPaid(debt.id)}
-                      style={{ fontSize: 12, color: 'var(--green)', background: 'none', border: 'none', cursor: 'pointer' }}>
+                      style={{ fontSize: 12, color: 'var(--green)', background: 'none',
+                               border: 'none', cursor: 'pointer', fontWeight: 700, marginTop: 4 }}>
                       ✓ Bezahlt
                     </button>
                   </div>
@@ -124,17 +127,17 @@ export default function PersonDetail({ personId, onBack }) {
           </>
         )}
 
-        {/* History */}
-        {allLoans.filter(l=>l.isReturned).length > 0 && (
+        {/* Returned history */}
+        {allLoans.filter(l => l.isReturned).length > 0 && (
           <>
             <div className="section-hd">Zurückgegeben</div>
             <div className="card">
-              {allLoans.filter(l=>l.isReturned).map(loan => {
+              {allLoans.filter(l => l.isReturned).map(loan => {
                 const item = s.item(loan.itemId)
                 return (
-                  <div key={loan.id} className="card-row">
-                    <div className="row-main" style={{ opacity: .5 }}>
-                      <div className="row-title">{item?.name ?? '—'}</div>
+                  <div key={loan.id} className="card-row" style={{ opacity: .5 }}>
+                    <div className="row-main">
+                      <div className="row-title">{item?.name ?? '–'}</div>
                       <div className="row-sub">{fmtDate(loan.lentOn)} → {fmtDate(loan.returnedOn)}</div>
                     </div>
                     <span className="badge badge-green">✓</span>
@@ -146,17 +149,15 @@ export default function PersonDetail({ personId, onBack }) {
         )}
 
         {/* Quick actions */}
-        <div className="card">
-          <div className="card-row" style={{ cursor: 'pointer' }} onClick={() => setShowLoan(true)}>
-            <div className="row-icon bg-blue"><span>↔️</span></div>
-            <div className="row-main"><div className="row-title">Weiteres verleihen</div></div>
-            <span className="chevron">›</span>
-          </div>
-          <div className="card-row" style={{ cursor: 'pointer' }} onClick={() => setShowMoney(true)}>
-            <div className="row-icon bg-green"><span>💶</span></div>
-            <div className="row-main"><div className="row-title">Schulden eintragen</div></div>
-            <span className="chevron">›</span>
-          </div>
+        <div className="quick-row">
+          <button className="quick-btn" onClick={() => setShowLoan(true)}>
+            <span className="quick-btn-icon">↔️</span>
+            Verleihen
+          </button>
+          <button className="quick-btn" onClick={() => setShowMoney(true)}>
+            <span className="quick-btn-icon">💶</span>
+            Schulden
+          </button>
         </div>
       </div>
 
