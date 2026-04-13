@@ -1,0 +1,24 @@
+# ── Secrets – NIEMALS einchecken! ────────────────────────────────────────────
+.env
+secrets/
+*.key
+*.pem
+*.p12
+
+# ── Tailscale Runtime-Daten ───────────────────────────────────────────────────
+tailscale-state/
+
+# ── OpenClaw Workspace (persönliche Daten) ────────────────────────────────────
+config/workspace/
+openclaw-data/
+
+# ── Docker ───────────────────────────────────────────────────────────────────
+docker-compose.override.yml
+
+# ── Node ─────────────────────────────────────────────────────────────────────
+node_modules/
+*.log
+
+# ── OS ───────────────────────────────────────────────────────────────────────
+.DS_Store
+Thumbs.db

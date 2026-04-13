@@ -1,0 +1,29 @@
+{
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "anthropic/claude-sonnet-4-6",
+        "fallbacks": ["anthropic/claude-haiku-4-5-20251001"]
+      },
+      "workspace": "/home/openclaw/.openclaw/workspace"
+    }
+  },
+  "gateway": {
+    "port": 18789,
+    "bind": "lan",
+    "auth": {
+      "mode": "token",
+      "token": "${OPENCLAW_GATEWAY_TOKEN}"
+    }
+  },
+  "channels": {
+    "telegram": {
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "dmPolicy": "allowlist",
+      "allowFrom": ["${TELEGRAM_ALLOWED_USERS}"]
+    }
+  },
+  "diagnostics": {
+    "enabled": false
+  }
+}
